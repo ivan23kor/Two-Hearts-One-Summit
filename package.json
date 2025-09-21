@@ -1,0 +1,19 @@
+{
+  "name": "two-hearts-one-summit",
+  "version": "1.0.0",
+  "description": "A cooperative climbing game for couples",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.160.0",
+    "socket.io-client": "^4.7.5"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "type": "module"
+}

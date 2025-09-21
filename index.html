@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two Hearts, One Summit</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1a1a1a;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .ui-element {
+            pointer-events: auto;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #fff;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        #connection-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            max-width: 300px;
+        }
+
+        #question-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 600px;
+            text-align: center;
+            display: none;
+        }
+
+        .pixelated {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        input, button {
+            font-family: 'Courier New', monospace;
+            background: #333;
+            color: #fff;
+            border: 1px solid #666;
+            padding: 5px;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #555;
+            cursor: pointer;
+        }
+
+        #question-meta {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+
+        #question-asker {
+            font-weight: bold;
+            color: #ffdd44;
+            margin-bottom: 15px;
+            padding: 5px;
+            background: rgba(255, 221, 68, 0.1);
+            border-radius: 3px;
+        }
+
+        #question-progress {
+            margin: 15px 0;
+        }
+
+        #progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        #progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        #controls-help {
+            font-size: 12px;
+        }
+
+        #controls-help h4 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="ui-overlay">
+            <div id="connection-panel" class="ui-element">
+                <h3>🏔️ Two Hearts, One Summit</h3>
+                <div id="menu">
+                    <button id="create-room">Create Room</button>
+                    <div>
+                        <input type="text" id="room-code" placeholder="Enter room code" maxlength="6">
+                        <button id="join-room">Join Room</button>
+                    </div>
+                </div>
+                <div id="waiting" style="display: none;">
+                    <p>Room Code: <strong id="current-room-code"></strong></p>
+                    <p>Waiting for partner...</p>
+                </div>
+                <div id="connected" style="display: none;">
+                    <p>💕 Connected with partner!</p>
+                    <p>Room: <span id="room-display"></span></p>
+                </div>
+            </div>
+
+            <div id="question-panel" class="ui-element">
+                <div id="question-content">
+                    <h4>💭 Time to Connect</h4>
+                    <div id="question-meta">
+                        <span id="question-category"></span> |
+                        Question <span id="question-number"></span> of 36
+                    </div>
+                    <div id="question-asker"></div>
+                    <p id="question-text"></p>
+                    <p id="question-instructions"></p>
+                    <div id="question-progress">
+                        <div id="progress-bar">
+                            <div id="progress-fill"></div>
+                        </div>
+                    </div>
+                    <button id="continue-climbing">Continue Climbing Together</button>
+                </div>
+            </div>
+
+            <div id="controls-help" class="ui-element" style="position: absolute; top: 20px; right: 20px; max-width: 200px; display: none;">
+                <h4>🎮 How to Play</h4>
+                <p><strong>Movement:</strong><br>
+                • Arrow keys or WASD<br>
+                • Get close to your partner<br>
+                • Use each other as holds</p>
+                <p><strong>Goal:</strong><br>
+                • Reach the summit together<br>
+                • Answer questions when you connect<br>
+                • Support each other!</p>
+                <button id="hide-help">Got it!</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>
