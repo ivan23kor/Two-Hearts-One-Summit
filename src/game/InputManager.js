@@ -4,7 +4,16 @@ export class InputManager extends EventEmitter {
     constructor() {
         super();
 
-        this.keys = {
+        // Separate key states for each player
+        this.player1Keys = {
+            up: false,
+            down: false,
+            left: false,
+            right: false,
+            interact: false
+        };
+        
+        this.player2Keys = {
             up: false,
             down: false,
             left: false,
@@ -12,20 +21,25 @@ export class InputManager extends EventEmitter {
             interact: false
         };
 
-        this.keyMappings = {
-            'ArrowUp': 'up',
+        // Player 1 uses WASD
+        this.player1KeyMappings = {
             'KeyW': 'up',
-            'ArrowDown': 'down',
             'KeyS': 'down',
-            'ArrowLeft': 'left',
             'KeyA': 'left',
-            'ArrowRight': 'right',
             'KeyD': 'right',
-            'Space': 'interact',
+            'Space': 'interact'
+        };
+        
+        // Player 2 uses Arrow Keys
+        this.player2KeyMappings = {
+            'ArrowUp': 'up',
+            'ArrowDown': 'down',
+            'ArrowLeft': 'left',
+            'ArrowRight': 'right',
             'Enter': 'interact'
         };
 
-        this.lastMoveTime = 0;
+        this.lastMoveTime = { player1: 0, player2: 0 };
         this.moveDelay = 200; // Milliseconds between moves for deliberate climbing
 
         this.setupEventListeners();
@@ -155,53 +169,95 @@ export class InputManager extends EventEmitter {
     }
 
     handleKeyDown(e) {
-        const action = this.keyMappings[e.code];
-        if (action && !this.keys[action]) {
-            this.keys[action] = true;
-            this.handleInput(action, true);
+        console.log('[Input] Key pressed:', e.code);
+        
+        // Check Player 1 (WASD)
+        const player1Action = this.player1KeyMappings[e.code];
+        console.log('[Input] Player 1 mapping:', player1Action, 'Key state before:', this.player1Keys[player1Action]);
+        
+        if (player1Action && !this.player1Keys[player1Action]) {
+            this.player1Keys[player1Action] = true;
+            console.log('[Input] Player 1 key activated:', player1Action);
+            this.handleInput(player1Action, true, 1);
+        }
+        
+        // Check Player 2 (Arrow Keys)
+        const player2Action = this.player2KeyMappings[e.code];
+        console.log('[Input] Player 2 mapping:', player2Action, 'Key state before:', this.player2Keys[player2Action]);
+        
+        if (player2Action && !this.player2Keys[player2Action]) {
+            this.player2Keys[player2Action] = true;
+            console.log('[Input] Player 2 key activated:', player2Action);
+            this.handleInput(player2Action, true, 2);
         }
     }
 
     handleKeyUp(e) {
-        const action = this.keyMappings[e.code];
-        if (action) {
-            this.keys[action] = false;
-            this.handleInput(action, false);
+        // Check Player 1 (WASD)
+        const player1Action = this.player1KeyMappings[e.code];
+        if (player1Action) {
+            this.player1Keys[player1Action] = false;
+            this.handleInput(player1Action, false, 1);
+        }
+        
+        // Check Player 2 (Arrow Keys)
+        const player2Action = this.player2KeyMappings[e.code];
+        if (player2Action) {
+            this.player2Keys[player2Action] = false;
+            this.handleInput(player2Action, false, 2);
         }
     }
 
     handleMobileInput(action, pressed) {
-        if (pressed && !this.keys[action]) {
-            this.keys[action] = true;
-            this.handleInput(action, true);
+        console.log('[Mobile Input]', action, pressed ? 'PRESSED' : 'RELEASED');
+        
+        // For mobile, we'll default to Player 1 controls
+        if (pressed && !this.player1Keys[action]) {
+            this.player1Keys[action] = true;
+            this.handleInput(action, true, 1);
+            console.log('[Mobile Input] Player 1 action triggered:', action);
         } else if (!pressed) {
-            this.keys[action] = false;
-            this.handleInput(action, false);
+            this.player1Keys[action] = false;
+            this.handleInput(action, false, 1);
         }
     }
 
-    handleInput(action, pressed) {
+    handleInput(action, pressed, playerId) {
+        console.log('[Input]', `Player ${playerId}:`, action, pressed ? 'PRESSED' : 'RELEASED');
+        
         if (!pressed) return;
 
         const now = Date.now();
-
+        const playerKey = `player${playerId}`;
 
         if (action === 'interact') {
-            this.emit('interact');
+            console.log('[Input] Interact event emitted for player', playerId);
+            this.emit('interact', playerId);
             return;
         }
 
         // Implement move delay for deliberate climbing
         if (['up', 'down', 'left', 'right'].includes(action)) {
-            if (now - this.lastMoveTime >= this.moveDelay) {
-                this.emit('move', action);
-                this.lastMoveTime = now;
+            const timeSinceLastMove = now - this.lastMoveTime[playerKey];
+            console.log(`[Input] Move delay check: ${timeSinceLastMove}ms >= ${this.moveDelay}ms?`);
+            
+            if (timeSinceLastMove >= this.moveDelay) {
+                console.log('[Input] Move event emitted:', action, 'for player', playerId);
+                this.emit('move', action, playerId);
+                this.lastMoveTime[playerKey] = now;
+            } else {
+                console.log('[Input] Move blocked by delay. Wait', this.moveDelay - timeSinceLastMove, 'more ms');
             }
         }
     }
 
     getInputState() {
-        return { ...this.keys };
+        const state = {
+            player1: { ...this.player1Keys },
+            player2: { ...this.player2Keys }
+        };
+        console.log('[InputState] Current key states:', state);
+        return state;
     }
 
     destroy() {

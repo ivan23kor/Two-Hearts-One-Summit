@@ -2,13 +2,62 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Two Hearts, One Summit</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#1a1a1a">
+    <meta name="msapplication-TileColor" content="#1a1a1a">
+    <meta name="msapplication-navbutton-color" content="#1a1a1a">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Two Hearts">
+    <meta name="application-name" content="Two Hearts">
+
+    <!-- App Description -->
+    <meta name="description" content="A cooperative climbing game for couples - reach the summit together through trust, communication, and connection">
+    <meta name="keywords" content="climbing, game, couples, cooperative, multiplayer, relationship, communication">
+
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/icons/icon-192x192.svg">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.svg">
+    <link rel="shortcut icon" href="/icons/icon-192x192.svg">
+
+    <!-- Microsoft Tiles -->
+    <meta name="msapplication-TileImage" content="/icons/icon-144x144.svg">
+    <meta name="msapplication-square70x70logo" content="/icons/icon-72x72.svg">
+    <meta name="msapplication-square150x150logo" content="/icons/icon-152x152.svg">
+    <meta name="msapplication-wide310x150logo" content="/icons/icon-384x384.svg">
+    <meta name="msapplication-square310x310logo" content="/icons/icon-384x384.svg">
+
+    <!-- Security & Performance -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="format-detection" content="address=no">
+
+    <!-- Social Media / Open Graph -->
+    <meta property="og:title" content="Two Hearts, One Summit">
+    <meta property="og:description" content="A cooperative climbing game for couples - reach the summit together through trust, communication, and connection">
+    <meta property="og:type" content="game">
+    <meta property="og:image" content="/icons/icon-512x512.svg">
+    <meta property="og:url" content="/">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Two Hearts, One Summit">
+    <meta name="twitter:description" content="A cooperative climbing game for couples">
+    <meta name="twitter:image" content="/icons/icon-512x512.svg">
     <style>
         body {
             margin: 0;
             padding: 0;
-            background: #1a1a1a;
+            background: #000000;
             font-family: 'Courier New', monospace;
             overflow: hidden;
         }
@@ -38,11 +87,12 @@
             border-radius: 5px;
         }
 
-        #connection-panel {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            max-width: 300px;
+            
+            .heart-input {
+                padding: 8px 12px;
+                font-size: 11px;
+                width: 130px;
+            }
         }
 
         #question-panel {
@@ -121,24 +171,6 @@
 <body>
     <div id="game-container">
         <div id="ui-overlay">
-            <div id="connection-panel" class="ui-element">
-                <h3>🏔️ Two Hearts, One Summit</h3>
-                <div id="menu">
-                    <button id="create-room">Create Room</button>
-                    <div>
-                        <input type="text" id="room-code" placeholder="Enter room code" maxlength="6">
-                        <button id="join-room">Join Room</button>
-                    </div>
-                </div>
-                <div id="waiting" style="display: none;">
-                    <p>Room Code: <strong id="current-room-code"></strong></p>
-                    <p>Waiting for partner...</p>
-                </div>
-                <div id="connected" style="display: none;">
-                    <p>💕 Connected with partner!</p>
-                    <p>Room: <span id="room-display"></span></p>
-                </div>
-            </div>
 
             <div id="question-panel" class="ui-element">
                 <div id="question-content">
@@ -159,17 +191,16 @@
                 </div>
             </div>
 
-            <div id="controls-help" class="ui-element" style="position: absolute; top: 20px; right: 20px; max-width: 200px; display: none;">
-                <h4>🎮 How to Play</h4>
-                <p><strong>Movement:</strong><br>
-                • Arrow keys or WASD<br>
-                • Get close to your partner<br>
-                • Use each other as holds</p>
-                <p><strong>Goal:</strong><br>
-                • Reach the summit together<br>
+            <div id="controls-help" class="ui-element" style="position: absolute; top: 20px; right: 20px; max-width: 250px; display: block;">
+                <h4>🎮 Two Hearts, One Summit</h4>
+                <p><strong>Player 1 (Red):</strong> WASD keys<br>
+                <strong>Player 2 (Blue):</strong> Arrow keys</p>
+                <p><strong>How to Play:</strong><br>
+                • Move close to your partner<br>
+                • Use each other's body as holds<br>
                 • Answer questions when you connect<br>
-                • Support each other!</p>
-                <button id="hide-help">Got it!</button>
+                • Reach the summit together!</p>
+                <button id="hide-help">Start Climbing!</button>
             </div>
         </div>
     </div>

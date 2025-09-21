@@ -9,12 +9,12 @@ export class Player {
         this.position = { x: 0, y: 0, z: 0 };
         this.isUsingBodyHold = false;
         this.bodyHoldPoints = {
-            feet: { x: 0, y: -2.0, z: 0 },
-            knees: { x: 0, y: -1.3, z: 0 },
-            hips: { x: 0, y: -0.3, z: 0 },
-            hands: { x: 0, y: -0.7, z: 0 },
-            elbows: { x: 0, y: -0.1, z: 0 },
-            shoulders: { x: 0, y: 0.3, z: 0 }
+            feet: { x: 0, y: -0.8, z: 0 },
+            knees: { x: 0, y: -0.4, z: 0 },
+            hips: { x: 0, y: -0.2, z: 0 },
+            hands: { x: 0, y: 0.7, z: 0 },
+            elbows: { x: 0, y: 0.3, z: 0 },
+            shoulders: { x: 0, y: 0.1, z: 0 }
         };
 
         this.createPlayerMesh();
@@ -22,118 +22,46 @@ export class Player {
     }
 
     createPlayerMesh() {
-        // Create a spider-like humanoid climber with elongated limbs
-
-        // Head (smaller, more compact)
-        const headGeometry = new THREE.BoxGeometry(0.3, 0.3, 0.25);
-        const headMaterial = new THREE.MeshLambertMaterial({ color: 0xffdbac }); // Skin tone
-        this.head = new THREE.Mesh(headGeometry, headMaterial);
-        this.head.position.set(0, 0.6, 0);
-        this.group.add(this.head);
-
-        // Body (much shorter and compact, spider-like)
-        const bodyGeometry = new THREE.BoxGeometry(0.4, 0.5, 0.25);
+        // Create simple climber with circular body and articulated limbs
+        
+        // Main body - Circle (red or blue depending on player)
+        const bodyGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.1, 16);
         const bodyMaterial = new THREE.MeshLambertMaterial({ color: this.color });
         this.body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-        this.body.position.set(0, 0.1, 0);
+        this.body.position.set(0, 0, 0);
+        this.body.rotation.x = Math.PI / 2; // Make it face forward
         this.group.add(this.body);
 
-        // Upper arms (elongated)
-        const upperArmGeometry = new THREE.BoxGeometry(0.12, 0.8, 0.12);
-        const armMaterial = new THREE.MeshLambertMaterial({ color: this.color });
+        // Head (small circle above body)
+        const headGeometry = new THREE.SphereGeometry(0.15, 12, 12);
+        const headMaterial = new THREE.MeshLambertMaterial({ color: 0xffdbac }); // Skin tone
+        this.head = new THREE.Mesh(headGeometry, headMaterial);
+        this.head.position.set(0, 0.4, 0);
+        this.group.add(this.head);
 
-        this.leftUpperArm = new THREE.Mesh(upperArmGeometry, armMaterial);
-        this.leftUpperArm.position.set(-0.3, 0.3, 0);
-        this.group.add(this.leftUpperArm);
-
-        this.rightUpperArm = new THREE.Mesh(upperArmGeometry, armMaterial);
-        this.rightUpperArm.position.set(0.3, 0.3, 0);
-        this.group.add(this.rightUpperArm);
-
-        // Forearms (very elongated)
-        const forearmGeometry = new THREE.BoxGeometry(0.1, 1.0, 0.1);
-
-        this.leftForearm = new THREE.Mesh(forearmGeometry, armMaterial);
-        this.leftForearm.position.set(-0.7, -0.1, 0);
-        this.group.add(this.leftForearm);
-
-        this.rightForearm = new THREE.Mesh(forearmGeometry, armMaterial);
-        this.rightForearm.position.set(0.7, -0.1, 0);
-        this.group.add(this.rightForearm);
-
-        // Hands (larger, spider-like)
-        const handGeometry = new THREE.BoxGeometry(0.15, 0.2, 0.08);
-        const handMaterial = new THREE.MeshLambertMaterial({ color: 0xffdbac });
-
-        this.leftHand = new THREE.Mesh(handGeometry, handMaterial);
-        this.leftHand.position.set(-0.7, -0.7, 0);
-        this.group.add(this.leftHand);
-
-        this.rightHand = new THREE.Mesh(handGeometry, handMaterial);
-        this.rightHand.position.set(0.7, -0.7, 0);
-        this.group.add(this.rightHand);
-
-        // Upper legs (elongated)
-        const upperLegGeometry = new THREE.BoxGeometry(0.15, 0.9, 0.15);
-        const legMaterial = new THREE.MeshLambertMaterial({ color: 0x2f4f4f }); // Dark gray pants
-
-        this.leftUpperLeg = new THREE.Mesh(upperLegGeometry, legMaterial);
-        this.leftUpperLeg.position.set(-0.15, -0.3, 0);
-        this.group.add(this.leftUpperLeg);
-
-        this.rightUpperLeg = new THREE.Mesh(upperLegGeometry, legMaterial);
-        this.rightUpperLeg.position.set(0.15, -0.3, 0);
-        this.group.add(this.rightUpperLeg);
-
-        // Lower legs (very elongated)
-        const lowerLegGeometry = new THREE.BoxGeometry(0.12, 1.2, 0.12);
-
-        this.leftLowerLeg = new THREE.Mesh(lowerLegGeometry, legMaterial);
-        this.leftLowerLeg.position.set(-0.15, -1.3, 0);
-        this.group.add(this.leftLowerLeg);
-
-        this.rightLowerLeg = new THREE.Mesh(lowerLegGeometry, legMaterial);
-        this.rightLowerLeg.position.set(0.15, -1.3, 0);
-        this.group.add(this.rightLowerLeg);
-
-        // Feet (larger, more grippy-looking)
-        const footGeometry = new THREE.BoxGeometry(0.2, 0.15, 0.25);
-        const footMaterial = new THREE.MeshLambertMaterial({ color: 0x333333 }); // Dark climbing shoes
-
-        this.leftFoot = new THREE.Mesh(footGeometry, footMaterial);
-        this.leftFoot.position.set(-0.15, -2.0, 0.05);
-        this.group.add(this.leftFoot);
-
-        this.rightFoot = new THREE.Mesh(footGeometry, footMaterial);
-        this.rightFoot.position.set(0.15, -2.0, 0.05);
-        this.group.add(this.rightFoot);
-
-        // Add multiple eyes for spider-like appearance
-        const eyeGeometry = new THREE.BoxGeometry(0.04, 0.04, 0.04);
+        // Eyes
+        const eyeGeometry = new THREE.SphereGeometry(0.02, 8, 8);
         const eyeMaterial = new THREE.MeshLambertMaterial({ color: 0x000000 });
-
-        // Main eyes
+        
         const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
-        leftEye.position.set(-0.08, 0.05, 0.13);
+        leftEye.position.set(-0.05, 0.05, 0.12);
         this.head.add(leftEye);
-
+        
         const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
-        rightEye.position.set(0.08, 0.05, 0.13);
+        rightEye.position.set(0.05, 0.05, 0.12);
         this.head.add(rightEye);
 
-        // Secondary smaller eyes
-        const smallEyeGeometry = new THREE.BoxGeometry(0.02, 0.02, 0.02);
-
-        const leftEye2 = new THREE.Mesh(smallEyeGeometry, eyeMaterial);
-        leftEye2.position.set(-0.05, 0.1, 0.13);
-        this.head.add(leftEye2);
-
-        const rightEye2 = new THREE.Mesh(smallEyeGeometry, eyeMaterial);
-        rightEye2.position.set(0.05, 0.1, 0.13);
-        this.head.add(rightEye2);
-
-        // Add climbing gear
-        this.addClimbingGear();
+        // Left Arm System (facing up for climbing)
+        this.createArm('left', -0.25, 0.1, this.color);
+        
+        // Right Arm System (facing up for climbing) 
+        this.createArm('right', 0.25, 0.1, this.color);
+        
+        // Left Leg System
+        this.createLeg('left', -0.15, -0.2);
+        
+        // Right Leg System
+        this.createLeg('right', 0.15, -0.2);
 
         // Enable shadows
         this.group.traverse((child) => {
@@ -143,27 +71,85 @@ export class Player {
             }
         });
     }
-
-    addClimbingGear() {
-        // Climbing helmet
-        const helmetGeometry = new THREE.BoxGeometry(0.45, 0.3, 0.35);
-        const helmetMaterial = new THREE.MeshLambertMaterial({
-            color: this.color,
-            transparent: true,
-            opacity: 0.8
-        });
-        const helmet = new THREE.Mesh(helmetGeometry, helmetMaterial);
-        helmet.position.set(0, 0.1, 0);
-        this.head.add(helmet);
-
-        // Climbing harness
-        const harnessGeometry = new THREE.TorusGeometry(0.35, 0.05, 8, 8);
-        const harnessMaterial = new THREE.MeshLambertMaterial({ color: 0x444444 });
-        const harness = new THREE.Mesh(harnessGeometry, harnessMaterial);
-        harness.rotation.x = Math.PI / 2;
-        harness.position.set(0, 0, 0);
-        this.body.add(harness);
+    
+    createArm(side, startX, startY, color) {
+        const limbMaterial = new THREE.MeshLambertMaterial({ color: color });
+        const handMaterial = new THREE.MeshLambertMaterial({ color: 0xffdbac });
+        
+        // Upper arm (shoulder to elbow) - angled upward for climbing
+        const upperArmGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.4, 8);
+        const upperArm = new THREE.Mesh(upperArmGeometry, limbMaterial);
+        
+        // Position upper arm at an upward angle
+        const upperArmX = startX + (side === 'left' ? -0.15 : 0.15);
+        const upperArmY = startY + 0.15;
+        upperArm.position.set(upperArmX, upperArmY, 0);
+        upperArm.rotation.z = side === 'left' ? Math.PI / 4 : -Math.PI / 4; // Angled up
+        this.group.add(upperArm);
+        this[side + 'UpperArm'] = upperArm;
+        
+        // Elbow joint (small sphere)
+        const elbowGeometry = new THREE.SphereGeometry(0.04, 8, 8);
+        const elbow = new THREE.Mesh(elbowGeometry, limbMaterial);
+        const elbowX = startX + (side === 'left' ? -0.25 : 0.25);
+        const elbowY = startY + 0.3;
+        elbow.position.set(elbowX, elbowY, 0);
+        this.group.add(elbow);
+        this[side + 'Elbow'] = elbow;
+        
+        // Forearm (elbow to hand) - continuing upward
+        const forearmGeometry = new THREE.CylinderGeometry(0.04, 0.04, 0.35, 8);
+        const forearm = new THREE.Mesh(forearmGeometry, limbMaterial);
+        const forearmX = startX + (side === 'left' ? -0.35 : 0.35);
+        const forearmY = startY + 0.5;
+        forearm.position.set(forearmX, forearmY, 0);
+        forearm.rotation.z = side === 'left' ? Math.PI / 6 : -Math.PI / 6; // Slightly angled
+        this.group.add(forearm);
+        this[side + 'Forearm'] = forearm;
+        
+        // Hand
+        const handGeometry = new THREE.SphereGeometry(0.06, 8, 8);
+        const hand = new THREE.Mesh(handGeometry, handMaterial);
+        const handX = startX + (side === 'left' ? -0.4 : 0.4);
+        const handY = startY + 0.7;
+        hand.position.set(handX, handY, 0);
+        this.group.add(hand);
+        this[side + 'Hand'] = hand;
     }
+    
+    createLeg(side, startX, startY) {
+        const limbMaterial = new THREE.MeshLambertMaterial({ color: 0x4444aa }); // Blue pants
+        const footMaterial = new THREE.MeshLambertMaterial({ color: 0x222222 }); // Dark shoes
+        
+        // Upper leg (hip to knee)
+        const upperLegGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.4, 8);
+        const upperLeg = new THREE.Mesh(upperLegGeometry, limbMaterial);
+        upperLeg.position.set(startX, startY - 0.2, 0);
+        this.group.add(upperLeg);
+        this[side + 'UpperLeg'] = upperLeg;
+        
+        // Knee joint
+        const kneeGeometry = new THREE.SphereGeometry(0.05, 8, 8);
+        const knee = new THREE.Mesh(kneeGeometry, limbMaterial);
+        knee.position.set(startX, startY - 0.4, 0);
+        this.group.add(knee);
+        this[side + 'Knee'] = knee;
+        
+        // Lower leg (knee to foot)
+        const lowerLegGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.4, 8);
+        const lowerLeg = new THREE.Mesh(lowerLegGeometry, limbMaterial);
+        lowerLeg.position.set(startX, startY - 0.6, 0);
+        this.group.add(lowerLeg);
+        this[side + 'LowerLeg'] = lowerLeg;
+        
+        // Foot
+        const footGeometry = new THREE.BoxGeometry(0.08, 0.06, 0.15);
+        const foot = new THREE.Mesh(footGeometry, footMaterial);
+        foot.position.set(startX, startY - 0.8, 0.05);
+        this.group.add(foot);
+        this[side + 'Foot'] = foot;
+    }
+
 
     createBodyHoldIndicators() {
         this.bodyHoldMeshes = {};
@@ -221,46 +207,47 @@ export class Player {
     }
 
     playClimbingAnimation(direction) {
-        // Spider-like climbing animation with elongated limbs
-        const duration = 0.3;
+        // Simple climbing animation with articulated limbs
+        const duration = 0.4;
         const startTime = Date.now();
 
         const animate = () => {
             const elapsed = (Date.now() - startTime) / 1000;
             const progress = Math.min(elapsed / duration, 1);
+            const wave = Math.sin(progress * Math.PI);
 
-            // Animate the new limb structure
+            // Animate the articulated limbs
             switch (direction) {
                 case 'up':
-                    this.leftUpperArm.rotation.z = Math.sin(progress * Math.PI) * 0.3;
-                    this.rightUpperArm.rotation.z = -Math.sin(progress * Math.PI) * 0.3;
-                    this.leftForearm.rotation.z = Math.sin(progress * Math.PI) * 0.2;
-                    this.rightForearm.rotation.z = -Math.sin(progress * Math.PI) * 0.2;
+                    // Arms reach higher during upward movement
+                    if (this.leftUpperArm) this.leftUpperArm.rotation.z += wave * 0.2;
+                    if (this.rightUpperArm) this.rightUpperArm.rotation.z -= wave * 0.2;
+                    if (this.leftForearm) this.leftForearm.rotation.z += wave * 0.1;
+                    if (this.rightForearm) this.rightForearm.rotation.z -= wave * 0.1;
                     break;
                 case 'left':
-                    this.leftUpperArm.rotation.z = Math.sin(progress * Math.PI) * 0.5;
-                    this.leftForearm.rotation.z = Math.sin(progress * Math.PI) * 0.3;
+                    // Left side movement
+                    if (this.leftUpperArm) this.leftUpperArm.rotation.z += wave * 0.4;
+                    if (this.leftForearm) this.leftForearm.rotation.z += wave * 0.3;
+                    if (this.leftUpperLeg) this.leftUpperLeg.rotation.z += wave * 0.2;
                     break;
                 case 'right':
-                    this.rightUpperArm.rotation.z = -Math.sin(progress * Math.PI) * 0.5;
-                    this.rightForearm.rotation.z = -Math.sin(progress * Math.PI) * 0.3;
+                    // Right side movement
+                    if (this.rightUpperArm) this.rightUpperArm.rotation.z -= wave * 0.4;
+                    if (this.rightForearm) this.rightForearm.rotation.z -= wave * 0.3;
+                    if (this.rightUpperLeg) this.rightUpperLeg.rotation.z -= wave * 0.2;
                     break;
                 case 'down':
-                    this.leftUpperLeg.rotation.z = Math.sin(progress * Math.PI) * 0.2;
-                    this.rightUpperLeg.rotation.z = -Math.sin(progress * Math.PI) * 0.2;
+                    // Legs move during downward movement
+                    if (this.leftUpperLeg) this.leftUpperLeg.rotation.z += wave * 0.3;
+                    if (this.rightUpperLeg) this.rightUpperLeg.rotation.z -= wave * 0.3;
+                    if (this.leftLowerLeg) this.leftLowerLeg.rotation.z -= wave * 0.2;
+                    if (this.rightLowerLeg) this.rightLowerLeg.rotation.z += wave * 0.2;
                     break;
             }
 
             if (progress < 1) {
                 requestAnimationFrame(animate);
-            } else {
-                // Reset to neutral position
-                this.leftUpperArm.rotation.z = 0;
-                this.rightUpperArm.rotation.z = 0;
-                this.leftForearm.rotation.z = 0;
-                this.rightForearm.rotation.z = 0;
-                this.leftUpperLeg.rotation.z = 0;
-                this.rightUpperLeg.rotation.z = 0;
             }
         };
 

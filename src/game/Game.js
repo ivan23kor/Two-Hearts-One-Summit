@@ -7,11 +7,10 @@ import { InputManager } from './InputManager.js';
 import { QuestionManager } from './QuestionManager.js';
 
 export class Game extends EventEmitter {
-    constructor(container, connectionManager) {
+    constructor(container) {
         super();
 
         this.container = container;
-        this.connectionManager = connectionManager;
 
         this.scene = new THREE.Scene();
         this.clock = new THREE.Clock();
@@ -21,7 +20,8 @@ export class Game extends EventEmitter {
         this.questionManager = new QuestionManager();
 
         this.players = new Map();
-        this.localPlayer = null;
+        this.player1 = null;  // Red player (WASD)
+        this.player2 = null;  // Blue player (Arrow keys)
 
         this.isRunning = false;
 
@@ -32,7 +32,6 @@ export class Game extends EventEmitter {
         this.setupScene();
         this.createPlayers();
         this.setupInput();
-        this.setupNetworking();
         this.start();
     }
 
@@ -55,45 +54,54 @@ export class Game extends EventEmitter {
     }
 
     createPlayers() {
-        // Create local player (Player 1 - red)
-        this.localPlayer = new Player(1, 0xff4444);
-        this.localPlayer.setPosition(-2, 2, 0);
-        this.players.set(1, this.localPlayer);
-        this.scene.add(this.localPlayer.group);
+        // Create Player 1 (Red - WASD controls)
+        this.player1 = new Player(1, 0xff4444);
+        this.player1.setPosition(-2, 2, 0);
+        this.players.set(1, this.player1);
+        this.scene.add(this.player1.group);
 
-        // Create remote player (Player 2 - blue)
-        const remotePlayer = new Player(2, 0x4444ff);
-        remotePlayer.setPosition(2, 2, 0);
-        this.players.set(2, remotePlayer);
-        this.scene.add(remotePlayer.group);
+        // Create Player 2 (Blue - Arrow key controls)
+        this.player2 = new Player(2, 0x4444ff);
+        this.player2.setPosition(2, 2, 0);
+        this.players.set(2, this.player2);
+        this.scene.add(this.player2.group);
     }
 
     setupInput() {
+        console.log('[Game] Setting up input manager...');
         this.inputManager = new InputManager();
 
-        this.inputManager.on('move', (direction) => {
-            if (this.localPlayer) {
-                this.movePlayer(this.localPlayer, direction);
+        this.inputManager.on('move', (direction, playerId) => {
+            console.log(`[Game] Move event received - direction: ${direction}, playerId: ${playerId}`);
+            const player = this.players.get(playerId);
+            if (player) {
+                console.log(`[Game] Player found:`, player.id);
+                this.movePlayer(player, direction);
+            } else {
+                console.log(`[Game] Player not found for id:`, playerId);
             }
         });
 
-        this.inputManager.on('interact', () => {
-            if (this.localPlayer) {
-                this.tryPlayerInteraction();
+        this.inputManager.on('interact', (playerId) => {
+            console.log(`[Game] Interact event received for player:`, playerId);
+            const player = this.players.get(playerId);
+            if (player) {
+                this.tryPlayerInteraction(player);
             }
         });
+        
+        console.log('[Game] Input manager setup complete');
     }
 
-    setupNetworking() {
-        this.connectionManager.onMessage((type, data) => {
-            this.handleNetworkMessage(type, data);
-        });
-    }
 
     movePlayer(player, direction) {
+        console.log(`[Game] movePlayer called - Player ${player.id}, direction: ${direction}`);
+        
         const moveDistance = 1;
         const currentPos = player.getPosition();
         let newPos = { ...currentPos };
+
+        console.log(`[Game] Current position:`, currentPos);
 
         switch (direction) {
             case 'up':
@@ -110,34 +118,61 @@ export class Game extends EventEmitter {
                 break;
         }
 
+        console.log(`[Game] Target position:`, newPos);
+
         // Check if move is valid (on a hold or using partner)
-        if (this.isValidMove(player, newPos)) {
+        const isValid = this.isValidMove(player, newPos);
+        console.log(`[Game] Move validity:`, isValid);
+        
+        if (isValid) {
+            console.log(`[Game] Executing move to position:`, newPos);
             player.setPosition(newPos.x, newPos.y, newPos.z);
             player.playClimbingAnimation(direction);
 
-            // Send move to partner
-            this.connectionManager.sendMessage('playerMove', {
-                playerId: player.id,
-                position: newPos
-            });
-
             // Check for body hold interactions
             this.checkBodyHoldInteraction(player);
+        } else {
+            console.log(`[Game] Move rejected - no valid hold at position:`, newPos);
         }
     }
 
     isValidMove(player, newPos) {
+        console.log(`[Game] Checking move validity for player ${player.id} to position:`, newPos);
+        
         // Check if position has a climbing hold
-        if (this.climbingWall.hasHoldAt(newPos.x, newPos.y)) {
+        const hasHold = this.climbingWall.hasHoldAt(newPos.x, newPos.y);
+        console.log(`[Game] Climbing wall has hold at position:`, hasHold);
+        
+        // DEBUG: List all available holds for troubleshooting
+        const allHolds = Array.from(this.climbingWall.holds.keys());
+        console.log(`[Game] All available holds:`, allHolds);
+        
+        if (hasHold) {
             return true;
         }
 
         // Check if player can use partner as body hold
         const partner = this.getPartnerPlayer(player);
+        console.log(`[Game] Partner player:`, partner ? partner.id : 'none');
+        
         if (partner && this.canUsePartnerAsBodyHold(player, newPos, partner)) {
+            console.log(`[Game] Can use partner as body hold: true`);
             return true;
         }
 
+        // TEMPORARY: Allow movement within reasonable bounds for testing
+        // Remove this once hold system is working properly
+        const withinBounds = (
+            newPos.x >= -10 && newPos.x <= 10 && 
+            newPos.y >= 0 && newPos.y <= 30
+        );
+        
+        if (withinBounds) {
+            console.log(`[Game] TEMPORARY: Allowing move within bounds for testing`);
+            return true;
+        }
+
+        console.log(`[Game] Move is invalid - out of bounds or no support available`);
         return false;
     }
 

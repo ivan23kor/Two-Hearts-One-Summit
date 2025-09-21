@@ -12,20 +12,21 @@ export class ClimbingWall {
     }
 
     createWall() {
-        // Create the main wall surface
+        // Create the main wall surface - concrete/gray color like real climbing walls
         const wallGeometry = new THREE.PlaneGeometry(this.wallWidth, this.wallHeight);
         const wallMaterial = new THREE.MeshLambertMaterial({
-            color: 0x8b4513, // Brown rock color
-            transparent: true,
-            opacity: 0.9
+            color: 0xa8a8a8, // Light gray concrete color
+            roughness: 0.9,
+            metalness: 0.1
         });
 
         this.wallMesh = new THREE.Mesh(wallGeometry, wallMaterial);
         this.wallMesh.position.set(0, this.wallHeight / 2, -0.5);
+        this.wallMesh.receiveShadow = true;
         this.group.add(this.wallMesh);
 
-        // Add some visual texture with random darker patches
-        this.createWallTexture();
+        // Add realistic concrete texture and panel lines
+        this.createConcreteTexture();
     }
 
     createWallTexture() {
