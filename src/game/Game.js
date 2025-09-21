@@ -49,20 +49,19 @@ export class Game extends EventEmitter {
 
         const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
         directionalLight.position.set(10, 20, 10);
-        directionalLight.castShadow = true;
         this.scene.add(directionalLight);
     }
 
     createPlayers() {
         // Create Player 1 (Red - WASD controls)
         this.player1 = new Player(1, 0xff4444);
-        this.player1.setPosition(-2, 2, 0);
+        this.player1.setPositionImmediate(-2, 2, 0);
         this.players.set(1, this.player1);
         this.scene.add(this.player1.group);
 
         // Create Player 2 (Blue - Arrow key controls)
         this.player2 = new Player(2, 0x4444ff);
-        this.player2.setPosition(2, 2, 0);
+        this.player2.setPositionImmediate(2, 2, 0);
         this.players.set(2, this.player2);
         this.scene.add(this.player2.group);
     }
@@ -139,16 +138,26 @@ export class Game extends EventEmitter {
     isValidMove(player, newPos) {
         console.log(`[Game] Checking move validity for player ${player.id} to position:`, newPos);
         
-        // Check if position has a climbing hold
-        const hasHold = this.climbingWall.hasHoldAt(newPos.x, newPos.y);
-        console.log(`[Game] Climbing wall has hold at position:`, hasHold);
-        
         // DEBUG: List all available holds for troubleshooting
-        const allHolds = Array.from(this.climbingWall.holds.keys());
-        console.log(`[Game] All available holds:`, allHolds);
+        const allHolds = Array.from(this.climbingWall.holds.entries());
+        console.log(`[Game] All available holds:`, allHolds.map(([key, hold]) => `${key} (${hold.playerColor})`));
         
-        if (hasHold) {
-            return true;
+        // Check if position has a climbing hold
+        const hold = this.climbingWall.getHoldAt(newPos.x, newPos.y);
+        console.log(`[Game] Climbing wall hold at position:`, hold);
+        
+        if (hold) {
+            // Check if player can grab this hold (matching colors)
+            const playerColor = this.getPlayerColor(player);
+            console.log(`[Game] Player color: ${playerColor}, Hold color: ${hold.playerColor}`);
+            
+            if (hold.playerColor === playerColor) {
+                console.log(`[Game] Hold color matches player color - valid move`);
+                return true;
+            } else {
+                console.log(`[Game] Hold color doesn't match player color - invalid move`);
+                return false;
+            }
         }
 
         // Check if player can use partner as body hold
@@ -160,19 +169,7 @@ export class Game extends EventEmitter {
             return true;
         }
 
-        // TEMPORARY: Allow movement within reasonable bounds for testing
-        // Remove this once hold system is working properly
-        const withinBounds = (
-            newPos.x >= -10 && newPos.x <= 10 && 
-            newPos.y >= 0 && newPos.y <= 30
-        );
-        
-        if (withinBounds) {
-            console.log(`[Game] TEMPORARY: Allowing move within bounds for testing`);
-            return true;
-        }
-
-        console.log(`[Game] Move is invalid - out of bounds or no support available`);
+        console.log(`[Game] Move is invalid - no valid hold available`);
         return false;
     }
 
@@ -183,6 +180,11 @@ export class Game extends EventEmitter {
             }
         }
         return null;
+    }
+
+    getPlayerColor(player) {
+        // Player 1 is red, Player 2 is blue
+        return player.id === 1 ? 'red' : 'blue';
     }
 
     canUsePartnerAsBodyHold(player, newPos, partner) {

@@ -1,0 +1,236 @@
+[
+  {
+    "x": -15.2,
+    "y": -8.1,
+    "cluster": "Getting Acquainted",
+    "tree": {
+      "question": "Who are you as a person?",
+      "children": [
+        {
+          "question": "Given the choice of anyone in the world, whom would you want as a dinner guest?",
+          "children": []
+        },
+        {
+          "question": "Would you like to be famous? In what way?",
+          "children": []
+        },
+        {
+          "question": "Before making a telephone call, do you ever rehearse what you are going to say? Why?",
+          "children": []
+        },
+        {
+          "question": "What would constitute a \"perfect\" day for you?",
+          "children": []
+        },
+        {
+          "question": "When did you last sing to yourself? To someone else?",
+          "children": []
+        },
+        {
+          "question": "Name three things you and your partner appear to have in common.",
+          "children": []
+        },
+        {
+          "question": "Complete this sentence: \"I wish I had someone with whom I could share...\"",
+          "children": []
+        },
+        {
+          "question": "Tell your partner something that you like about them already.",
+          "children": []
+        },
+        {
+          "question": "Alternate sharing something you consider a positive characteristic of your partner. Share a total of five items.",
+          "children": []
+        },
+        {
+          "question": "Tell your partner what you like about them; be very honest this time, saying things that you might not say to someone you've just met.",
+          "children": []
+        }
+      ]
+    }
+  },
+  {
+    "x": -5.7,
+    "y": 2.4,
+    "cluster": "Self-Discovery",
+    "tree": {
+      "question": "What drives and shapes you?",
+      "children": [
+        {
+          "question": "For what in your life do you feel most grateful?",
+          "children": []
+        },
+        {
+          "question": "What is the greatest accomplishment of your life?",
+          "children": []
+        },
+        {
+          "question": "If you could wake up tomorrow having gained any one quality or ability, what would it be?",
+          "children": []
+        },
+        {
+          "question": "Do you have a secret hunch about how you will die?",
+          "children": []
+        },
+        {
+          "question": "Take four minutes and tell your partner your life story in as much detail as possible.",
+          "children": []
+        }
+      ]
+    }
+  },
+  {
+    "x": 8.3,
+    "y": -4.6,
+    "cluster": "Dreams & Aspirations",
+    "tree": {
+      "question": "What do you dream of becoming?",
+      "children": [
+        {
+          "question": "If you were able to live to the age of 90 and retain either the mind or body of a 30-year-old for the last 60 years of your life, which would you want?",
+          "children": []
+        },
+        {
+          "question": "If a crystal ball could tell you the truth about yourself, your life, the future or anything else, what would you want to know?",
+          "children": []
+        },
+        {
+          "question": "Is there something that you've dreamed of doing for a long time? Why haven't you done it?",
+          "children": []
+        },
+        {
+          "question": "If you knew that in one year you would die suddenly, would you change anything about the way you are now living? Why?",
+          "children": []
+        }
+      ]
+    }
+  },
+  {
+    "x": -12.1,
+    "y": 8.9,
+    "cluster": "Family & Origins",
+    "tree": {
+      "question": "Where did you come from?",
+      "children": [
+        {
+          "question": "If you could change anything about the way you were raised, what would it be?",
+          "children": []
+        },
+        {
+          "question": "How close and warm is your family? Do you feel your childhood was happier than most other people's?",
+          "children": []
+        },
+        {
+          "question": "How do you feel about your relationship with your mother?",
+          "children": []
+        },
+        {
+          "question": "What roles do love and affection play in your life?",
+          "children": []
+        },
+        {
+          "question": "Of all the people in your family, whose death would you find most disturbing? Why?",
+          "children": []
+        }
+      ]
+    }
+  },
+  {
+    "x": 3.8,
+    "y": 12.7,
+    "cluster": "Connection & Relationships",
+    "tree": {
+      "question": "How do you connect with others?",
+      "children": [
+        {
+          "question": "What do you value most in a friendship?",
+          "children": []
+        },
+        {
+          "question": "What does friendship mean to you?",
+          "children": []
+        }
+      ]
+    }
+  },
+  {
+    "x": 12.4,
+    "y": 7.2,
+    "cluster": "Meaningful Memories",
+    "tree": {
+      "question": "What memories define you?",
+      "children": [
+        {
+          "question": "What is your most treasured memory?",
+          "children": []
+        },
+        {
+          "question": "What is your most terrible memory?",
+          "children": []
+        }
+      ]
+    }
+  },
+  {
+    "x": -8.6,
+    "y": 15.3,
+    "cluster": "Playful Intimacy",
+    "tree": {
+      "question": "How do we connect through shared experience?",
+      "children": [
+        {
+          "question": "Make three true \"we\" statements each. For instance, \"We are both in this room feeling...\"",
+          "children": []
+        },
+        {
+          "question": "What, if anything, is too serious to be joked about?",
+          "children": []
+        }
+      ]
+    }
+  },
+  {
+    "x": 6.1,
+    "y": 18.4,
+    "cluster": "Deep Vulnerability",
+    "tree": {
+      "question": "What are you most afraid to share?",
+      "children": [
+        {
+          "question": "If you were going to become a close friend with your partner, please share what would be important for him or her to know.",
+          "children": []
+        },
+        {
+          "question": "Share with your partner an embarrassing moment in your life.",
+          "children": []
+        },
+        {
+          "question": "When did you last cry in front of another person? By yourself?",
+          "children": []
+        },
+        {
+          "question": "Share a personal problem and ask your partner's advice on how he or she might handle it. Also, ask your partner to reflect back to you how you seem to be feeling about the problem you have chosen.",
+          "children": []
+        }
+      ]
+    }
+  },
+  {
+    "x": 14.7,
+    "y": 21.8,
+    "cluster": "Ultimate Questions",
+    "tree": {
+      "question": "What matters most in the end?",
+      "children": [
+        {
+          "question": "If you were to die this evening with no opportunity to communicate with anyone, what would you most regret not having told someone? Why haven't you told them yet?",
+          "children": []
+        },
+        {
+          "question": "Your house, containing everything you own, catches fire. After saving your loved ones and pets, you have time to safely make a final dash to save any one item. What would it be? Why?",
+          "children": []
+        }
+      ]
+    }
+  }
+]

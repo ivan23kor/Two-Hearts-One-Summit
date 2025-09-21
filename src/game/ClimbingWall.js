@@ -7,51 +7,25 @@ export class ClimbingWall {
         this.wallWidth = 20;
         this.wallHeight = 30;
 
+        console.log('[ClimbingWall] Creating wall...');
         this.createWall();
+        console.log('[ClimbingWall] Generating holds...');
         this.generateHolds();
+        console.log(`[ClimbingWall] Constructor complete. Total holds: ${this.holds.size}`);
     }
 
     createWall() {
-        // Create the main wall surface - concrete/gray color like real climbing walls
+        // Create simple orange background wall
         const wallGeometry = new THREE.PlaneGeometry(this.wallWidth, this.wallHeight);
-        const wallMaterial = new THREE.MeshLambertMaterial({
-            color: 0xa8a8a8, // Light gray concrete color
-            roughness: 0.9,
-            metalness: 0.1
+        const wallMaterial = new THREE.MeshBasicMaterial({
+            color: 0xFF7A00 // Orange background
         });
 
         this.wallMesh = new THREE.Mesh(wallGeometry, wallMaterial);
         this.wallMesh.position.set(0, this.wallHeight / 2, -0.5);
-        this.wallMesh.receiveShadow = true;
         this.group.add(this.wallMesh);
-
-        // Add realistic concrete texture and panel lines
-        this.createConcreteTexture();
     }
 
-    createWallTexture() {
-        // Add random rock texture patches
-        for (let i = 0; i < 20; i++) {
-            const patchGeometry = new THREE.PlaneGeometry(
-                Math.random() * 3 + 1,
-                Math.random() * 3 + 1
-            );
-            const patchMaterial = new THREE.MeshLambertMaterial({
-                color: 0x654321,
-                transparent: true,
-                opacity: 0.3
-            });
-
-            const patch = new THREE.Mesh(patchGeometry, patchMaterial);
-            patch.position.set(
-                (Math.random() - 0.5) * this.wallWidth,
-                Math.random() * this.wallHeight,
-                -0.4
-            );
-
-            this.group.add(patch);
-        }
-    }
 
     generateHolds() {
         // Create holds that require cooperation
@@ -59,120 +33,87 @@ export class ClimbingWall {
     }
 
     createCooperativeRoute() {
-        // Starting holds (both players can start here)
-        this.addHold(-2, 2, 'start');
-        this.addHold(2, 2, 'start');
+        // Starting holds - one for each player
+        this.addHold(-2, 2, 'red');   // Red player start
+        this.addHold(2, 2, 'blue');   // Blue player start
 
-        // First cooperation point - gap that requires partner assistance
-        this.addHold(-3, 6, 'normal');
-        this.addHold(3, 8, 'normal');
+        // Create alternating holds going up the wall
+        const holds = [
+            // Intermediate holds to make first moves possible
+            { x: -2, y: 3, color: 'red' },
+            { x: -2, y: 4, color: 'red' },
+            { x: 2, y: 3, color: 'blue' },
+            { x: 2, y: 4, color: 'blue' },
+            
+            // Level 1
+            { x: -3, y: 6, color: 'blue' },
+            { x: 3, y: 6, color: 'red' },
+            
+            // Level 2
+            { x: -1, y: 10, color: 'red' },
+            { x: 1, y: 10, color: 'blue' },
+            
+            // Level 3
+            { x: -4, y: 14, color: 'blue' },
+            { x: 4, y: 14, color: 'red' },
+            
+            // Level 4
+            { x: -2, y: 18, color: 'red' },
+            { x: 2, y: 18, color: 'blue' },
+            
+            // Level 5
+            { x: 0, y: 22, color: 'red' },
+            { x: -1, y: 24, color: 'blue' },
+            { x: 1, y: 24, color: 'red' },
+            
+            // Summit - both players need to reach
+            { x: -1, y: 28, color: 'red' },
+            { x: 1, y: 28, color: 'blue' }
+        ];
 
-        // Middle section with scattered holds
-        this.addHold(-1, 10, 'normal');
-        this.addHold(1, 12, 'normal');
-        this.addHold(-4, 14, 'normal');
-        this.addHold(4, 16, 'normal');
-
-        // Another cooperation section
-        this.addHold(-2, 18, 'normal');
-        this.addHold(2, 20, 'normal');
-
-        // Near the top - requires both players to work together
-        this.addHold(0, 24, 'normal');
-
-        // Summit - both players must reach together
-        this.addHold(-1, 28, 'summit');
-        this.addHold(1, 28, 'summit');
-
-        // Add some intermediate holds that are only reachable with partner help
-        this.addHold(-6, 8, 'partner_only');
-        this.addHold(6, 12, 'partner_only');
-        this.addHold(-5, 20, 'partner_only');
-        this.addHold(5, 24, 'partner_only');
-    }
-
-    addHold(x, y, type = 'normal') {
-        const hold = this.createHoldMesh(type);
-        hold.position.set(x, y, 0);
-
-        this.group.add(hold);
-        this.holds.set(`${Math.round(x)},${Math.round(y)}`, {
-            position: { x, y },
-            type: type,
-            mesh: hold
+        holds.forEach(hold => {
+            this.addHold(hold.x, hold.y, hold.color);
         });
     }
 
-    createHoldMesh(type) {
-        let geometry, material;
+    addHold(x, y, playerColor = null) {
+        // If no color specified, randomly assign red or blue
+        if (!playerColor) {
+            playerColor = Math.random() < 0.5 ? 'red' : 'blue';
+        }
+        
+        const hold = this.createHoldMesh(playerColor);
+        hold.position.set(x, y, 0);
 
-        switch (type) {
-            case 'start':
-                // Large jug hold - easy to grip
-                geometry = new THREE.CylinderGeometry(0.3, 0.5, 0.4, 8);
-                material = new THREE.MeshLambertMaterial({ color: 0x00ff00 }); // Green
-                break;
+        this.group.add(hold);
+        const key = `${Math.round(x)},${Math.round(y)}`;
+        this.holds.set(key, {
+            position: { x, y },
+            playerColor: playerColor,
+            mesh: hold
+        });
+        
+        console.log(`[ClimbingWall] Added ${playerColor} hold at (${x}, ${y}) with key: ${key}`);
+    }
 
-            case 'summit':
-                // Large celebration hold
-                geometry = new THREE.CylinderGeometry(0.4, 0.6, 0.5, 8);
-                material = new THREE.MeshLambertMaterial({ color: 0xffd700 }); // Gold
-                break;
-
-            case 'partner_only':
-                // Small crimp hold - requires precision
-                geometry = new THREE.CylinderGeometry(0.15, 0.25, 0.2, 6);
-                material = new THREE.MeshLambertMaterial({ color: 0xff6600 }); // Orange
-                break;
-
-            default: // normal
-                // Realistic climbing hold shapes
-                const holdShapes = [
-                    // Jug hold
-                    () => new THREE.CylinderGeometry(0.2, 0.35, 0.3, 8),
-                    // Crimp hold
-                    () => new THREE.BoxGeometry(0.6, 0.15, 0.25),
-                    // Sloper hold
-                    () => new THREE.SphereGeometry(0.25, 8, 6),
-                    // Pinch hold
-                    () => new THREE.CylinderGeometry(0.1, 0.2, 0.4, 6),
-                    // Edge hold
-                    () => new THREE.BoxGeometry(0.8, 0.1, 0.2)
-                ];
-
-                const randomShape = holdShapes[Math.floor(Math.random() * holdShapes.length)];
-                geometry = randomShape();
-
-                // Realistic hold colors
-                const holdColors = [
-                    0x8B4513, // Brown
-                    0x696969, // Dark gray
-                    0x2F4F4F, // Dark slate gray
-                    0x708090, // Slate gray
-                    0x778899, // Light slate gray
-                    0x5F5F5F  // Charcoal
-                ];
-
-                const randomColor = holdColors[Math.floor(Math.random() * holdColors.length)];
-                material = new THREE.MeshLambertMaterial({
-                    color: randomColor,
-                    roughness: 0.8,
-                    metalness: 0.1
-                });
-                break;
+    createHoldMesh(playerColor = null) {
+        // Small sphere geometry for all holds - no sharp edges
+        const geometry = new THREE.SphereGeometry(0.2, 12, 12);
+        
+        // Only red and blue holds
+        let color;
+        if (playerColor === 'red') {
+            color = 0xff4444; // Red holds for red player
+        } else if (playerColor === 'blue') {
+            color = 0x4444ff; // Blue holds for blue player
+        } else {
+            // Random assignment if not specified
+            color = Math.random() < 0.5 ? 0xff4444 : 0x4444ff;
         }
 
+        const material = new THREE.MeshBasicMaterial({ color: color });
         const hold = new THREE.Mesh(geometry, material);
-        hold.castShadow = true;
-        hold.receiveShadow = true;
-
-        // Add some random rotation for natural look
-        if (type === 'normal') {
-            hold.rotation.x = (Math.random() - 0.5) * 0.5;
-            hold.rotation.y = (Math.random() - 0.5) * 0.5;
-            hold.rotation.z = (Math.random() - 0.5) * 0.5;
-        }
-
+        
         return hold;
     }
 

@@ -7,6 +7,8 @@ export class Player {
         this.group = new THREE.Group();
 
         this.position = { x: 0, y: 0, z: 0 };
+        this.targetPosition = { x: 0, y: 0, z: 0 };
+        this.smoothFactor = 8; // Movement smoothness factor
         this.isUsingBodyHold = false;
         this.bodyHoldPoints = {
             feet: { x: 0, y: -0.8, z: 0 },
@@ -63,13 +65,7 @@ export class Player {
         // Right Leg System
         this.createLeg('right', 0.15, -0.2);
 
-        // Enable shadows
-        this.group.traverse((child) => {
-            if (child.isMesh) {
-                child.castShadow = true;
-                child.receiveShadow = true;
-            }
-        });
+        // Shadows disabled for simplified graphics
     }
     
     createArm(side, startX, startY, color) {
@@ -171,7 +167,12 @@ export class Player {
     }
 
     setPosition(x, y, z) {
+        this.targetPosition = { x, y, z };
+    }
+
+    setPositionImmediate(x, y, z) {
         this.position = { x, y, z };
+        this.targetPosition = { x, y, z };
         this.group.position.set(x, y, z);
     }
 
@@ -309,9 +310,22 @@ export class Player {
     }
 
     update(deltaTime) {
-        // Add subtle idle animation
+        // Smooth interpolation to target position
+        const lerpFactor = this.smoothFactor * deltaTime;
+        
+        this.position.x += (this.targetPosition.x - this.position.x) * lerpFactor;
+        this.position.y += (this.targetPosition.y - this.position.y) * lerpFactor;
+        this.position.z += (this.targetPosition.z - this.position.z) * lerpFactor;
+        
+        // Add subtle idle animation on top of smooth movement
         const time = Date.now() * 0.001;
-        this.group.position.y = this.position.y + Math.sin(time * 2) * 0.02;
+        const idleOffset = Math.sin(time * 2) * 0.02;
+        
+        this.group.position.set(
+            this.position.x,
+            this.position.y + idleOffset,
+            this.position.z
+        );
 
         // Slight head bobbing
         this.head.rotation.y = Math.sin(time * 1.5) * 0.05;

@@ -19,8 +19,6 @@ export class Renderer {
 
         this.renderer.setSize(this.width, this.height);
         this.renderer.setPixelRatio(1); // Force 1:1 pixel ratio for pixelated effect
-        this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMap.type = THREE.PCFShadowMap;
 
         // Set clear color to dark blue night sky
         this.renderer.setClearColor(0x1a1a2e, 1);
